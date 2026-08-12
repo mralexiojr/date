@@ -20,12 +20,35 @@
 </head>
 <body>
 
+<!-- Страховка: тексты экранов подставляет скрипт, поэтому без него страница
+     была бы пустой. Здесь лежит то, без чего свидание не состоится.
+     Дату, время и адрес правь и тут тоже, они не берутся из настроек. -->
+<noscript>
+  <div class="fallback">
+    <div class="fallback__inner">
+      <h1>Приглашение на свидание</h1>
+      <p>Я приглашаю такую прекрасную тебя на свидание.</p>
+      <p>
+        Кино под открытым небом, «8 подруг Оушена».<br>
+        <strong>Воскресенье, 16 августа, 20:30.</strong><br>
+        Taganka Roof, Большой Дровяной переулок, 6, крыша на четвёртом этаже.
+      </p>
+      <p class="lede">
+        Вход справа от «Сырного сомелье», четыре минуты от метро Таганская.
+        Напиши мне, если идёшь.
+      </p>
+      <p><a href="https://t.me/Alex_W_Mironov">Написать в Telegram</a></p>
+    </div>
+  </div>
+</noscript>
+
 <main class="deck" id="deck">
 
   <!-- 1. Обложка -->
   <section class="screen is-active" data-screen="cover">
     <div class="screen__inner">
       <figure class="photo photo--cover" data-photo="cover">
+        <!-- impeccable-disable-next-line broken-image -- src подставляет скрипт из CONTENT, при пустом пути блок удаляется целиком -->
         <img alt="" decoding="async" fetchpriority="high">
       </figure>
       <h1 class="display" data-reveal>
@@ -53,6 +76,7 @@
   <section class="screen" data-screen="place">
     <div class="screen__inner">
       <figure class="photo photo--place" data-photo="place">
+        <!-- impeccable-disable-next-line broken-image -- src подставляет скрипт, при ошибке загрузки показывается заглушка -->
         <img alt="Место свидания" loading="lazy" decoding="async">
       </figure>
       <h2 class="title" data-reveal data-slot="placeTitle"></h2>

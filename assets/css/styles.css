@@ -51,12 +51,21 @@
   --paper-2:    #201814;
   --ink:        #F3EBE3;
   --ink-soft:   #A5968C;
-  --ink-faint:  #6B5C53;
+  /* 4.86:1 к фону. Прежний #6B5C53 давал 2.93:1 и не проходил норму:
+     этим цветом набран адрес, по которому она будет искать вход. */
+  --ink-faint:  #8F7F73;
   --accent:     #E07C5E;
   --accent-rgb: 224, 124, 94;
   --accent-ink: #1B1210;
   --hairline:   rgba(243, 235, 227, .14);
   --shadow:     0 24px 60px -20px rgba(0, 0, 0, .6);
+
+  /* Конфетти берёт цвета отсюда, а не из скрипта, иначе при смене темы
+     они остались бы подобранными под тёмный фон. */
+  --confetti-1: #E07C5E;
+  --confetti-2: #F2A184;
+  --confetti-3: #EBCDB6;
+  --confetti-4: #C9603F;
 }
 
 /* --- СВЕТЛАЯ (запасная) ---
@@ -65,12 +74,17 @@
   --paper-2:    #EFE6DC;
   --ink:        #241D1A;
   --ink-soft:   #6E625B;
-  --ink-faint:  #A99C93;
+  --ink-faint:  #7A6B60;
   --accent:     #B94F35;
   --accent-rgb: 185, 79, 53;
   --accent-ink: #FFF8F4;
   --hairline:   rgba(36, 29, 26, .12);
   --shadow:     0 24px 60px -20px rgba(58, 38, 28, .28);
+
+  --confetti-1: #B94F35;
+  --confetti-2: #D9744F;
+  --confetti-3: #C9A07C;
+  --confetti-4: #8C6A55;
 }
 --- */
 
@@ -389,7 +403,7 @@ body::before {
   color: var(--ink-soft);
   padding-left: .6rem;
   padding-right: .6rem;
-  min-height: 2.6rem;
+  min-height: 2.75rem;
   text-decoration: underline;
   text-underline-offset: .28em;
   text-decoration-thickness: 1px;
@@ -439,7 +453,8 @@ body::before {
   transform: translate3d(var(--no-x, 0px), var(--no-y, 0px), 0)
              scale(var(--no-scale, 1));
   transition: transform .26s var(--ease-out), opacity .26s var(--ease-out);
-  will-change: transform;
+  /* will-change включается скриптом на время прыжка и снимается после
+     остановки: постоянный слой на видеокарте держать незачем. */
 }
 
 .btn--no.is-loose:active {
@@ -500,10 +515,10 @@ body::before {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(env(safe-area-inset-bottom) + 1.5rem);
+  bottom: calc(env(safe-area-inset-bottom) + .8rem);
   display: flex;
-  gap: .5rem;
-  padding: .5rem;
+  gap: 0;
+  padding: 0;
   opacity: 1;
   transition: opacity .28s var(--ease-out);
 }
@@ -513,11 +528,13 @@ body::before {
   pointer-events: none;
 }
 
+/* Сама точка остаётся крошечной, а нажимаемая область занимает 44 px:
+   норма для пальца. Раньше промахнуться было легко. */
 .dots button {
   -webkit-appearance: none;
   appearance: none;
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   border: 0;
   background: transparent;
@@ -554,6 +571,45 @@ body::before {
 }
 
 .confetti.is-on { opacity: 1; }
+
+/* --- Если скрипт не выполнился ----------------------------------------
+   Тексты страницы подставляются скриптом, поэтому без него экраны пустые.
+   Вероятность мала, зависимостей нет, но попытка одна, а последствие
+   полное. Этот блок перекрывает всё и несёт главное: когда, что и где. */
+.fallback {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--paper);
+  display: grid;
+  place-items: center;
+  padding:
+    calc(env(safe-area-inset-top) + 2rem)
+    calc(env(safe-area-inset-right) + var(--pad-x))
+    calc(env(safe-area-inset-bottom) + 2rem)
+    calc(env(safe-area-inset-left) + var(--pad-x));
+  overflow-y: auto;
+}
+
+.fallback__inner {
+  max-width: 32rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+}
+
+.fallback h1 {
+  margin: 0;
+  font-size: clamp(2rem, 8.5vw, 2.8rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+}
+
+.fallback p { margin: 0; line-height: 1.55; }
+.fallback strong { color: var(--accent); font-weight: 500; }
+.fallback .lede { color: var(--ink-soft); }
 
 /* --- Уважение к настройкам движения ---------------------------------- */
 /* Ослабленное движение это не «выключить всё». Перемещения и масштабирование

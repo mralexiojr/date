@@ -250,6 +250,7 @@ const CONTENT = {
 
   let dodged = 0;
   let loose  = false;
+  let settleTimer;
 
   const caught = () => dodged >= CONTENT.dodges;
 
@@ -283,6 +284,12 @@ const CONTENT = {
     noBtn.style.setProperty('--no-x', `${x}px`);
     noBtn.style.setProperty('--no-y', `${y}px`);
 
+    /* Подсказка видеокарте нужна только на время перелёта. Оставлять её
+       включённой навсегда значит держать лишний слой в памяти. */
+    noBtn.style.willChange = 'transform';
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => { noBtn.style.willChange = 'auto'; }, 700);
+
     dodged++;
 
     /* «Да» набирает вес, «Нет» теряет. */
@@ -299,6 +306,17 @@ const CONTENT = {
     if (caught()) return;
     e.preventDefault();
     moveNo();
+  });
+
+  /* С клавиатуры pointerdown не приходит, поэтому раньше нажатие Enter на
+     «Нет» не делало ровно ничего: кнопка выглядела сломанной. Теперь она
+     уворачивается и от клавиши тоже. */
+  noBtn.addEventListener('keydown', e => {
+    if (caught()) return;
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      moveNo();
+    }
   });
 
   noBtn.addEventListener('click', e => {
@@ -343,8 +361,14 @@ const CONTENT = {
     };
     resize();
 
-    /* Оттенки подобраны под тёмный фон: на графите тёмные частицы пропадают. */
-    const colors = ['#E07C5E', '#F2A184', '#EBCDB6', '#C9603F'];
+    /* Цвета берём из тех же токенов, что и вся страница. Зашивать их сюда
+       нельзя: при смене темы конфетти осталось бы от прежней палитры. */
+    const tokens = getComputedStyle(document.documentElement);
+    const colors = ['--confetti-1', '--confetti-2', '--confetti-3', '--confetti-4']
+      .map(name => tokens.getPropertyValue(name).trim())
+      .filter(Boolean);
+
+    if (!colors.length) colors.push(tokens.getPropertyValue('--accent').trim() || '#E07C5E');
     const parts = Array.from({ length: 90 }, () => ({
       x: window.innerWidth * (0.15 + Math.random() * 0.7),
       y: window.innerHeight * 0.42 + (Math.random() - 0.5) * 60,
