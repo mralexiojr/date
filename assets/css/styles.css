@@ -13,7 +13,11 @@
   font-family: 'Onest';
   font-style: normal;
   font-weight: 300 700;
-  font-display: swap;
+  /* optional вместо swap: шрифт предзагружается и лежит рядом, поэтому почти
+     всегда успевает к первой отрисовке. Если вдруг не успеет, страница
+     останется на системном шрифте вместо того, чтобы моргнуть подменой
+     на глазах у читающего. Мигание заметнее, чем другой шрифт. */
+  font-display: optional;
   src: url('../fonts/onest-cyrillic.woff2') format('woff2');
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
@@ -21,7 +25,11 @@
   font-family: 'Onest';
   font-style: normal;
   font-weight: 300 700;
-  font-display: swap;
+  /* optional вместо swap: шрифт предзагружается и лежит рядом, поэтому почти
+     всегда успевает к первой отрисовке. Если вдруг не успеет, страница
+     останется на системном шрифте вместо того, чтобы моргнуть подменой
+     на глазах у читающего. Мигание заметнее, чем другой шрифт. */
+  font-display: optional;
   src: url('../fonts/onest-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
                  U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
@@ -68,8 +76,16 @@
 
 :root {
   --radius:     20px;
-  --ease:       cubic-bezier(.16, 1, .3, 1);
-  --dur:        .62s;
+
+  /* Встроенные в браузер кривые слишком вялые. Эти дают движению характер. */
+  --ease-out:    cubic-bezier(.23, 1, .32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
+
+  /* Уход быстрее прихода: пока человек ждёт нового экрана, старый уже убрался.
+     Симметричные длительности читаются как задержка. */
+  --dur-out:   .18s;
+  --dur-in:    .3s;
+  --dur-press: .14s;
 
   --pad-x:      clamp(1.25rem, 6vw, 3rem);
   --gap:        clamp(1.1rem, 3.4vw, 1.9rem);
@@ -137,12 +153,16 @@ body::before {
 
   opacity: 0;
   visibility: hidden;
-  transition: opacity var(--dur) var(--ease), visibility var(--dur);
+  /* Уходящий экран гасим быстро, видимость снимаем ровно в конец затухания,
+     чтобы он не перехватывал касания. */
+  transition: opacity var(--dur-out) var(--ease-out),
+              visibility 0s linear var(--dur-out);
 }
 
 .screen.is-active {
   opacity: 1;
   visibility: visible;
+  transition: opacity var(--dur-in) var(--ease-out), visibility 0s;
 }
 
 .screen__inner {
@@ -167,8 +187,8 @@ body::before {
   opacity: 1;
   transform: none;
   transition:
-    opacity .7s var(--ease) var(--delay, 0s),
-    transform .7s var(--ease) var(--delay, 0s);
+    opacity .42s var(--ease-out) var(--delay, 0s),
+    transform .42s var(--ease-out) var(--delay, 0s);
 }
 
 /* --- Типографика ----------------------------------------------------- */
@@ -267,15 +287,28 @@ body::before {
   position: relative;
 }
 
+/* Снимок не просто проявляется, а наводится на резкость и оседает в рамку.
+   Размытие маскирует стык между пустой рамкой и картинкой: глаз читает это
+   как одно движение, а не как подмену одного объекта другим.
+   Радиус держим небольшим, размытие в Safari дорогое. */
 .photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity .8s var(--ease);
+  transform: scale(1.04);
+  filter: blur(10px);
+  transition:
+    opacity .5s var(--ease-out),
+    transform .72s var(--ease-out),
+    filter .5s var(--ease-out);
 }
 
-.photo img.is-loaded { opacity: 1; }
+.photo img.is-loaded {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
 
 .photo--cover { aspect-ratio: 4 / 5; max-height: 46dvh; }
 .photo--place { aspect-ratio: 3 / 2; max-height: 40dvh; }
@@ -323,11 +356,13 @@ body::before {
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  /* Отклик на нажатие обязан быть быстрым: это подтверждение, что интерфейс
+     услышал палец. Всё, что дольше 160 мс, читается как задержка. */
   transition:
-    transform .32s var(--ease),
-    background-color .32s var(--ease),
-    color .32s var(--ease),
-    box-shadow .32s var(--ease);
+    transform var(--dur-press) var(--ease-out),
+    background-color .24s var(--ease-out),
+    color .24s var(--ease-out),
+    box-shadow .24s var(--ease-out);
 }
 
 .btn:active { transform: scale(.975); }
@@ -379,7 +414,7 @@ body::before {
   /* Растёт с каждой попыткой увернуться. Задаётся из JS. */
   transform: scale(var(--yes-scale, 1));
   transform-origin: left center;
-  transition: transform .5s var(--ease), box-shadow .5s var(--ease);
+  transition: transform .22s var(--ease-out), box-shadow .22s var(--ease-out);
 }
 
 .btn--yes:active { transform: scale(calc(var(--yes-scale, 1) * .975)); }
@@ -389,20 +424,27 @@ body::before {
   color: var(--ink-soft);
   box-shadow: inset 0 0 0 1px var(--hairline);
   transform: scale(var(--no-scale, 1));
-  transition: transform .5s var(--ease), opacity .5s var(--ease);
+  transition: transform .22s var(--ease-out), opacity .22s var(--ease-out);
 }
 
-/* Как только «Нет» начинает уворачиваться, он выходит из потока. */
+/* Как только «Нет» начинает уворачиваться, он выходит из потока.
+   Положение задаётся через translate, а не через left и top: смещение
+   раскладки браузер пересчитывает заново на каждом кадре, а transform
+   уходит на видеокарту. На телефоне разница видна сразу. */
 .btn--no.is-loose {
   position: absolute;
-  left: var(--no-x, 0px);
-  top: var(--no-y, 0px);
+  left: 0;
+  top: 0;
   margin: 0;
-  transition:
-    left .42s var(--ease),
-    top .42s var(--ease),
-    transform .42s var(--ease),
-    opacity .42s var(--ease);
+  transform: translate3d(var(--no-x, 0px), var(--no-y, 0px), 0)
+             scale(var(--no-scale, 1));
+  transition: transform .26s var(--ease-out), opacity .26s var(--ease-out);
+  will-change: transform;
+}
+
+.btn--no.is-loose:active {
+  transform: translate3d(var(--no-x, 0px), var(--no-y, 0px), 0)
+             scale(calc(var(--no-scale, 1) * .975));
 }
 
 /* --- Карточка деталей ------------------------------------------------ */
@@ -463,7 +505,7 @@ body::before {
   gap: .5rem;
   padding: .5rem;
   opacity: 1;
-  transition: opacity .4s var(--ease);
+  transition: opacity .28s var(--ease-out);
 }
 
 .dots.is-hidden {
@@ -491,7 +533,7 @@ body::before {
   height: .32rem;
   border-radius: 999px;
   background: var(--ink-faint);
-  transition: background-color .4s var(--ease), transform .4s var(--ease);
+  transition: background-color .24s var(--ease-out), transform .24s var(--ease-out);
 }
 
 .dots button[aria-current='true']::before {
@@ -508,20 +550,45 @@ body::before {
   pointer-events: none;
   z-index: 20;
   opacity: 0;
-  transition: opacity .5s var(--ease);
+  transition: opacity .4s var(--ease-out);
 }
 
 .confetti.is-on { opacity: 1; }
 
 /* --- Уважение к настройкам движения ---------------------------------- */
+/* Ослабленное движение это не «выключить всё». Перемещения и масштабирование
+   убираем, мягкие затухания оставляем: без них смена экрана читается как
+   обрыв. Конфетти не запускается вовсе, это решается в скрипте. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .001ms !important;
+  [data-reveal] { transform: none; }
+
+  .screen.is-active [data-reveal] {
+    transform: none;
+    transition: opacity .24s ease var(--delay, 0s);
   }
-  [data-reveal] { opacity: 1; transform: none; }
-  .photo img { opacity: 1; }
+
+  .photo img {
+    transform: none;
+    filter: none;
+    transition: opacity .24s ease;
+  }
+
+  .photo img.is-loaded { transform: none; filter: none; }
+
+  .btn:active { transform: none; }
+
+  .btn--yes,
+  .btn--yes:active,
+  .btn--no { transform: none; }
+
+  /* У убегающей кнопки transform задаёт положение, а не украшение.
+     Поэтому его не трогаем, снимаем только сглаживание перелёта. */
+  .btn--no.is-loose {
+    transition: none;
+    will-change: auto;
+  }
+
+  .dots button::before { transition: background-color .2s ease; }
 }
 
 /* --- Широкий экран ----------------------------------------------------

@@ -172,9 +172,11 @@ const CONTENT = {
     dots.appendChild(b);
   });
 
+  /* Шаг между элементами держим в районе 60 мс. Больше начинает читаться
+     как медлительность, меньше сливается в одно движение. */
   function stagger(screen) {
     screen.querySelectorAll('[data-reveal]').forEach((el, i) => {
-      el.style.setProperty('--delay', `${0.09 * i + 0.05}s`);
+      el.style.setProperty('--delay', `${0.06 * i + 0.04}s`);
     });
   }
 
