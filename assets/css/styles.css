@@ -28,7 +28,30 @@
                  U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* --- Токены ---------------------------------------------------------- */
+/* --- Токены -----------------------------------------------------------
+   ТЕМА ЗАФИКСИРОВАНА. Страница выглядит одинаково на всех телефонах
+   независимо от того, включён ли на них тёмный режим. Это сделано
+   намеренно: приглашение открывают один раз, и впечатление не должно
+   зависеть от чужих настроек.
+
+   ЧТОБЫ ВЕРНУТЬ СВЕТЛУЮ ТЕМУ: закомментируй блок «ТЁМНАЯ» и раскомментируй
+   блок «СВЕТЛАЯ» ниже. Больше ничего менять не нужно. */
+
+/* --- ТЁМНАЯ (активна) --- */
+:root {
+  --paper:      #16110F;
+  --paper-2:    #201814;
+  --ink:        #F3EBE3;
+  --ink-soft:   #A5968C;
+  --ink-faint:  #6B5C53;
+  --accent:     #E07C5E;
+  --accent-rgb: 224, 124, 94;
+  --accent-ink: #1B1210;
+  --hairline:   rgba(243, 235, 227, .14);
+  --shadow:     0 24px 60px -20px rgba(0, 0, 0, .6);
+}
+
+/* --- СВЕТЛАЯ (запасная) ---
 :root {
   --paper:      #F7F2EC;
   --paper-2:    #EFE6DC;
@@ -36,30 +59,20 @@
   --ink-soft:   #6E625B;
   --ink-faint:  #A99C93;
   --accent:     #B94F35;
+  --accent-rgb: 185, 79, 53;
   --accent-ink: #FFF8F4;
   --hairline:   rgba(36, 29, 26, .12);
   --shadow:     0 24px 60px -20px rgba(58, 38, 28, .28);
+}
+--- */
 
+:root {
   --radius:     20px;
   --ease:       cubic-bezier(.16, 1, .3, 1);
   --dur:        .62s;
 
   --pad-x:      clamp(1.25rem, 6vw, 3rem);
   --gap:        clamp(1.1rem, 3.4vw, 1.9rem);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper:      #16110F;
-    --paper-2:    #201814;
-    --ink:        #F3EBE3;
-    --ink-soft:   #A5968C;
-    --ink-faint:  #6B5C53;
-    --accent:     #E07C5E;
-    --accent-ink: #1B1210;
-    --hairline:   rgba(243, 235, 227, .14);
-    --shadow:     0 24px 60px -20px rgba(0, 0, 0, .6);
-  }
 }
 
 /* --- База ------------------------------------------------------------ */
@@ -98,8 +111,8 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(60% 44% at 78% 8%,  rgba(185, 79, 53, .10), transparent 70%),
-    radial-gradient(52% 40% at 12% 92%, rgba(185, 79, 53, .07), transparent 72%);
+    radial-gradient(60% 44% at 78% 8%,  rgba(var(--accent-rgb), .14), transparent 70%),
+    radial-gradient(52% 40% at 12% 92%, rgba(var(--accent-rgb), .09), transparent 72%);
 }
 
 /* --- Экраны ---------------------------------------------------------- */
@@ -272,7 +285,7 @@ body::before {
   display: grid;
   place-items: center;
   background:
-    linear-gradient(150deg, var(--paper-2), rgba(185, 79, 53, .13));
+    linear-gradient(150deg, var(--paper-2), rgba(var(--accent-rgb), .13));
   box-shadow: none;
   border: 1px dashed var(--hairline);
 }
@@ -327,7 +340,7 @@ body::before {
 .btn--primary {
   background: var(--accent);
   color: var(--accent-ink);
-  box-shadow: 0 12px 30px -12px rgba(185, 79, 53, .7);
+  box-shadow: 0 12px 30px -12px rgba(var(--accent-rgb), .55);
 }
 
 .btn--ghost {
@@ -362,7 +375,7 @@ body::before {
 .btn--yes {
   background: var(--accent);
   color: var(--accent-ink);
-  box-shadow: 0 14px 34px -14px rgba(185, 79, 53, .75);
+  box-shadow: 0 14px 34px -14px rgba(var(--accent-rgb), .6);
   /* Растёт с каждой попыткой увернуться. Задаётся из JS. */
   transform: scale(var(--yes-scale, 1));
   transform-origin: left center;
@@ -428,6 +441,16 @@ body::before {
   align-items: flex-start;
   gap: .5rem;
   width: 100%;
+}
+
+/* Сноска под кнопкой календаря. Тихая: это уточнение, а не предупреждение. */
+.hint {
+  margin: -.15rem 0 0;
+  padding-left: .1rem;
+  font-size: .82rem;
+  line-height: 1.45;
+  color: var(--ink-faint);
+  max-width: 30ch;
 }
 
 /* --- Точки прогресса -------------------------------------------------- */

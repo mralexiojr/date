@@ -58,6 +58,11 @@ const CONTENT = {
      Если правишь дату или время выше, поправь и event.ics. */
   calendarFile: 'event.ics',
 
+  /* Сноска под кнопкой календаря. Встроенный браузер Telegram файлы
+     событий системе не отдаёт, поэтому честно предупреждаем.
+     Пустая строка убирает сноску. */
+  calendarHint: 'Работает при открытии в браузере. Из Telegram нажми «...» вверху и выбери Safari.',
+
   /* --- Поведение кнопки «Нет» -----------------------------------------
      dodges: сколько раз «Нет» увернётся, прежде чем даст себя нажать.
      Поставь очень большое число (например 9999), если поймать её
@@ -97,7 +102,7 @@ const CONTENT = {
     'coverNote', 'introLine1', 'introLine2', 'introLine3',
     'placeTitle', 'filmTitle', 'venueName', 'venueAddress',
     'dateLine', 'time', 'timeNote', 'askTitle',
-    'finalTitle', 'finalNote', 'noTitle', 'noNote',
+    'finalTitle', 'finalNote', 'noTitle', 'noNote', 'calendarHint',
   ].forEach(key => fill(key, CONTENT[key]));
 
   /* Сводка на финальном экране собирается из тех же данных. */
@@ -128,6 +133,7 @@ const CONTENT = {
     calLink.href = CONTENT.calendarFile;
   } else {
     calLink.remove();
+    document.querySelector('[data-slot="calendarHint"]')?.remove();
   }
 
   /* --- Фотографии -------------------------------------------------------
@@ -335,7 +341,8 @@ const CONTENT = {
     };
     resize();
 
-    const colors = ['#B94F35', '#E07C5E', '#D9A47F', '#8C6A55'];
+    /* Оттенки подобраны под тёмный фон: на графите тёмные частицы пропадают. */
+    const colors = ['#E07C5E', '#F2A184', '#EBCDB6', '#C9603F'];
     const parts = Array.from({ length: 90 }, () => ({
       x: window.innerWidth * (0.15 + Math.random() * 0.7),
       y: window.innerHeight * 0.42 + (Math.random() - 0.5) * 60,

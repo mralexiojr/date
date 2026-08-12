@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Приглашение</title>
 <meta name="description" content="Приглашение на свидание">
-<meta name="theme-color" content="#F7F2EC" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#16110F" media="(prefers-color-scheme: dark)">
+<!-- Тема зафиксирована тёмной, поэтому цвет один на все случаи.
+     Если вернёшь светлую тему в styles.css, поставь здесь #F7F2EC. -->
+<meta name="theme-color" content="#16110F">
 
 <!-- Превью для Telegram и iMessage. Заполняется в assets/js/invitation.js -->
 <meta property="og:type" content="website">
@@ -111,6 +112,7 @@
         <!-- Без target и без download: на iOS переход по .ics в текущей
              вкладке открывает системный лист добавления события. -->
         <a class="btn btn--ghost" id="calendar" href="#">Добавить в календарь</a>
+        <p class="hint" data-slot="calendarHint"></p>
         <a class="btn btn--link" id="mapLink" href="#" target="_blank" rel="noopener">Открыть карту</a>
       </div>
     </div>
