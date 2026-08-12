@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Приглашение</title>
+<meta name="description" content="Приглашение на свидание">
+<meta name="theme-color" content="#F7F2EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16110F" media="(prefers-color-scheme: dark)">
+
+<!-- Превью для Telegram и iMessage. Заполняется в assets/js/invitation.js -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Приглашение">
+<meta property="og:description" content="Открой, тут кое-что для тебя">
+
+<link rel="preload" href="assets/fonts/onest-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/onest-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<main class="deck" id="deck">
+
+  <!-- 1. Обложка -->
+  <section class="screen is-active" data-screen="cover">
+    <div class="screen__inner">
+      <figure class="photo photo--cover" data-photo="cover">
+        <img alt="" decoding="async" fetchpriority="high">
+      </figure>
+      <h1 class="display" data-reveal>
+        <span>Приглашение</span>
+        <span>на свидание</span>
+      </h1>
+      <p class="lede" data-reveal data-slot="coverNote"></p>
+      <button class="btn btn--primary" type="button" data-next>Открыть</button>
+    </div>
+  </section>
+
+  <!-- 2. Обращение -->
+  <section class="screen" data-screen="intro">
+    <div class="screen__inner screen__inner--text">
+      <p class="prose" data-reveal>
+        <span class="prose__line" data-slot="introLine1"></span>
+        <span class="prose__line prose__line--accent" data-slot="introLine2"></span>
+        <span class="prose__line" data-slot="introLine3"></span>
+      </p>
+      <button class="btn btn--ghost" type="button" data-next>Дальше</button>
+    </div>
+  </section>
+
+  <!-- 3. Место -->
+  <section class="screen" data-screen="place">
+    <div class="screen__inner">
+      <figure class="photo photo--place" data-photo="place">
+        <img alt="Место свидания" loading="lazy" decoding="async">
+      </figure>
+      <h2 class="title" data-reveal data-slot="placeTitle"></h2>
+      <p class="film" data-reveal data-slot="filmTitle"></p>
+      <p class="meta" data-reveal>
+        <span data-slot="venueName"></span>
+        <span class="meta__sub" data-slot="venueAddress"></span>
+      </p>
+      <button class="btn btn--ghost" type="button" data-next>Дальше</button>
+    </div>
+  </section>
+
+  <!-- 4. Время -->
+  <section class="screen" data-screen="time">
+    <div class="screen__inner screen__inner--text">
+      <p class="overline" data-reveal data-slot="dateLine"></p>
+      <p class="clock" data-reveal data-slot="time"></p>
+      <p class="lede" data-reveal data-slot="timeNote"></p>
+      <button class="btn btn--ghost" type="button" data-next>Дальше</button>
+    </div>
+  </section>
+
+  <!-- 5. Выбор -->
+  <section class="screen" data-screen="ask">
+    <div class="screen__inner screen__inner--text">
+      <h2 class="display display--ask" data-reveal data-slot="askTitle"></h2>
+      <div class="choice" id="choice">
+        <button class="btn btn--yes" type="button" id="yes">Да</button>
+        <button class="btn btn--no" type="button" id="no">Нет</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Финал -->
+  <section class="screen" data-screen="final">
+    <div class="screen__inner screen__inner--text">
+      <h2 class="display" data-reveal data-slot="finalTitle"></h2>
+      <p class="lede" data-reveal data-slot="finalNote"></p>
+
+      <dl class="card" data-reveal>
+        <div class="card__row">
+          <dt>Когда</dt>
+          <dd data-slot="cardWhen"></dd>
+        </div>
+        <div class="card__row">
+          <dt>Что</dt>
+          <dd data-slot="cardWhat"></dd>
+        </div>
+        <div class="card__row">
+          <dt>Где</dt>
+          <dd data-slot="cardWhere"></dd>
+        </div>
+      </dl>
+
+      <div class="final__actions" data-reveal>
+        <a class="btn btn--primary" id="writeMe" href="#" target="_blank" rel="noopener">Написать тебе</a>
+        <!-- Без target и без download: на iOS переход по .ics в текущей
+             вкладке открывает системный лист добавления события. -->
+        <a class="btn btn--ghost" id="calendar" href="#">Добавить в календарь</a>
+        <a class="btn btn--link" id="mapLink" href="#" target="_blank" rel="noopener">Открыть карту</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6b. Мягкий отказ -->
+  <section class="screen" data-screen="soft-no">
+    <div class="screen__inner screen__inner--text">
+      <h2 class="display" data-reveal data-slot="noTitle"></h2>
+      <p class="lede" data-reveal data-slot="noNote"></p>
+      <button class="btn btn--ghost" type="button" data-back-to="ask">Вернуться</button>
+    </div>
+  </section>
+
+</main>
+
+<nav class="dots" id="dots" aria-label="Навигация по страницам"></nav>
+<canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+<script src="assets/js/invitation.js"></script>
+</body>
+</html>

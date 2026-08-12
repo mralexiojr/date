@@ -1,0 +1,7 @@
+# Служебные файлы Claude Code
+.claude/
+
+# Мусор операционной системы
+Thumbs.db
+desktop.ini
+.DS_Store
